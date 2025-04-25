@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Disease Prediction System</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap">
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #f9fafc;
+      color: #2c3e50;
+    }
+
+    .hero {
+      background: #276ef1;
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .btn {
+      margin-top: 15px;
+      background-color: #276ef1;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .symptom-box {
+      background-color: #eee;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 30px;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none; /* Initially hidden */
+    }
+
+    .symptom-box li {
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .symptom-box li:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <h1>Book Appointment with Trusted Doctors</h1>
+    <p>Stay Home, Use This Site, Help Society</p>
+    <img src="{{ url_for('static', filename='img/image.png') }}" alt="Doctors" style="width: 150px; margin-top: 20px;">
+  </section>
+
+  <div class="container">
+    <form method="POST">
+      <center>
+        <label for="symptomTextarea"><strong>Enter your symptoms:</strong></label><br><br>
+        <textarea id="symptomTextarea" name="symptoms" placeholder="e.g., Headache, Vomiting">{{ symptoms_entered }}</textarea>
+        <br>
+        <button class="btn" type="submit" id="predictBtn">Predict Disease</button>
+      </center>
+    </form>
+
+    {% if final_prediction %}
+    <div class="result">
+      <center>
+        <h2><strong>Prediction Result:</strong></h2>
+        <p><strong>Predicted Disease:</strong> {{ final_prediction }}</p>
+        <p><strong>Consult Specialist:</strong> {{ final_specialist }}</p>
+      </center>
+    </div>
+    {% endif %}
+
+    <div class="symptom-box" id="symptomBox">
+      <strong>Click to Add Symptoms:</strong>
+      <ul id="symptomList">
+        {% for symptom in symptoms %}
+        <li>{{ symptom }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const textarea = document.getElementById('symptomTextarea');
+    const symptomBox = document.getElementById('symptomBox');
+    const predictBtn = document.getElementById('predictBtn');
+    const listItems = document.querySelectorAll('#symptomList li');
+
+    // Always show symptom box when the textarea is focused
+    textarea.addEventListener('focus', () => {
+      symptomBox.style.display = 'block';
+    });
+
+    // Hide the symptom box when the "Predict Disease" button is clicked
+    predictBtn.addEventListener('click', () => {
+      symptomBox.style.display = 'none';
+    });
+
+    // Add clicked symptom to the textarea
+    listItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const current = textarea.value.toLowerCase();
+        const clicked = item.textContent.trim();
+
+        if (!current.includes(clicked.toLowerCase())) {
+          textarea.value = current === '' ? clicked : textarea.value + ', ' + clicked;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
